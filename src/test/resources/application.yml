@@ -1,0 +1,14 @@
+spring:
+  main:
+    banner-mode: off
+  application:
+    name: BatchTest
+  r2dbc:
+    url: r2dbc:h2:mem:///testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+  shell:
+    interactive:
+      enabled: false
+  profiles:
+    active: test
