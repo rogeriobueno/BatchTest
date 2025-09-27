@@ -43,9 +43,9 @@ class ValueUtilTest {
 
     @Test
     void testGetOrDefaultBigDecimalToLong() {
-        BigDecimal value = BigDecimal.valueOf(2);
-        long result = ValueUtil.getOrDefault(value, 1, 999L);
-        assertEquals((long) (2 * Math.pow(1, 10)), result);
-        assertEquals(999L, ValueUtil.getOrDefault(null, 1, 999L));
+        BigDecimal value = BigDecimal.valueOf(20.121);
+        long result = ValueUtil.getOrDefault(value, 2, 0L);
+        assertEquals(2012L, result);
+        assertEquals(999L, ValueUtil.getOrDefault(null, 2, 999L));
     }
 }
