@@ -1,0 +1,12 @@
+spring:
+  main:
+    banner-mode: off
+  application:
+    name: BatchTest
+  r2dbc:
+    url: r2dbc:mysql://localhost:3306/db?serverTimezone=UTC
+    username: root
+    password: admin
+  shell:
+    interactive:
+      enabled: true
