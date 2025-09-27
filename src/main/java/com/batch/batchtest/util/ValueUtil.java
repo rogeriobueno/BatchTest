@@ -17,7 +17,7 @@ public class ValueUtil {
 
     public static Long getOrDefault(BigDecimal value, long decimal, long defaultValue) {
         return value != null
-                ? value.multiply(BigDecimal.valueOf(Math.pow(decimal, 10L))).longValue()
+                ? value.multiply(BigDecimal.valueOf(Math.pow(10L, decimal))).longValue()
                 : defaultValue;
     }
 

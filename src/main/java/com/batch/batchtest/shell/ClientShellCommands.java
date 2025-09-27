@@ -2,9 +2,11 @@ package com.batch.batchtest.shell;
 
 import com.batch.batchtest.service.ClientExportService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 
+@Profile("!test")
 @ShellComponent
 @RequiredArgsConstructor
 public class ClientShellCommands {
