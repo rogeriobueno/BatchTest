@@ -13,20 +13,15 @@ public class FixedWidthUtil {
         for (Field field : dto.getClass().getDeclaredFields()) {
             FixedField fw = field.getAnnotation(FixedField.class);
             if (fw != null) {
-                field.setAccessible(true);
-                Object value;
                 try {
-                    value = field.get(dto);
+                    field.setAccessible(true);
+                    Object value = field.get(dto);
+                    String str = formatValue(value, field.getType(), fw.pattern());
+                    str = alignAndPad(str, fw.length(), fw.padChar(), fw.align());
+                    sb.append(str);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-                String str = formatValue(value, field.getType(), fw.pattern());
-                if (fw.align() == FixedField.Align.RIGHT) {
-                    str = padLeft(str, fw.length(), fw.padChar());
-                } else {
-                    str = padRight(str, fw.length(), fw.padChar());
-                }
-                sb.append(str);
             }
         }
         return sb.toString();
@@ -34,54 +29,23 @@ public class FixedWidthUtil {
 
     private static String formatValue(Object value, Class<?> type, String pattern) {
         if (value == null) return "";
-        // BigDecimal
         if (type == BigDecimal.class) {
-            if (pattern != null && !pattern.isEmpty()) {
-                return String.format(pattern, ((BigDecimal) value).setScale(2, RoundingMode.HALF_UP));
-            }
-            return ((BigDecimal) value).setScale(2, RoundingMode.HALF_UP).toPlainString();
+            BigDecimal bd = ((BigDecimal) value).setScale(2, RoundingMode.HALF_UP);
+            return (pattern != null && !pattern.isEmpty()) ? String.format(pattern, bd) : bd.toPlainString();
         }
-        // LocalDate
         if (type == LocalDate.class) {
-            if (pattern != null && !pattern.isEmpty()) {
-                return ((LocalDate) value).format(DateTimeFormatter.ofPattern(pattern));
-            }
-            return ((LocalDate) value).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            DateTimeFormatter fmt =
+                    DateTimeFormatter.ofPattern((pattern != null && !pattern.isEmpty()) ? pattern : "yyyy-MM-dd");
+            return ((LocalDate) value).format(fmt);
         }
-        // Numbers
-        if (type == Long.class
-                || type == long.class
-                || type == Integer.class
-                || type == int.class
-                || type == Double.class
-                || type == double.class
-                || Number.class.isAssignableFrom(type)) {
-            if (pattern != null && !pattern.isEmpty()) {
-                return String.format(pattern, value);
-            }
-            return value.toString();
-        }
-        // Others
-        if (pattern != null && !pattern.isEmpty()) {
-            return String.format(pattern, value);
-        }
-        return value.toString();
+        return (pattern != null && !pattern.isEmpty()) ? String.format(pattern, value) : value.toString();
     }
 
-    private static String padLeft(String value, int length, char padChar) {
+    private static String alignAndPad(String value, int length, char padChar, FixedField.Align align) {
         if (value == null) value = "";
-        if (value.length() >= length) return value.substring(0, length);
-        StringBuilder sb = new StringBuilder();
-        for (int i = value.length(); i < length; i++) sb.append(padChar);
-        sb.append(value);
-        return sb.toString();
-    }
-
-    private static String padRight(String value, int length, char padChar) {
-        if (value == null) value = "";
-        if (value.length() >= length) return value.substring(0, length);
-        StringBuilder sb = new StringBuilder(value);
-        for (int i = value.length(); i < length; i++) sb.append(padChar);
-        return sb.toString();
+        if (value.length() > length) return value.substring(0, length);
+        int padLen = length - value.length();
+        String pad = String.valueOf(padChar).repeat(padLen);
+        return align == FixedField.Align.RIGHT ? pad + value : value + pad;
     }
 }
