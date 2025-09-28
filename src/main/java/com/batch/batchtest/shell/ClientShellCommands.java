@@ -1,6 +1,6 @@
 package com.batch.batchtest.shell;
 
-import com.batch.batchtest.service.ClientExportService;
+import com.batch.batchtest.service.client.ClientExportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.shell.standard.ShellComponent;
